@@ -1,0 +1,11 @@
+body {
+    font-family: sans-serif;
+}
+#copyright {
+    position: absolute;
+    bottom: 0px;
+    font-size: 9px;
+    color: grey;
+    font-family: sans-serif;
+    margin-bottom: 8px;
+}

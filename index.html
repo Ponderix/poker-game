@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Play some poker">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Poker Game</title>
+
+        <link rel="icon" type="image/png" href="assets/chips/chipRedWhite.png">
+        <script src="libraries/d3.min.js" charset="utf-8"></script>
+    </head>
+
+    <body>
+        <div id="game">
+            <div id="table">
+            </div>
+
+            <div id="inputs">
+                <input type="text" id="input_raise" placeholder="RAISE BET"></input>
+                <button type="button" id="btn_call">CALL BET</button>
+                <button type="button" id="btn_fold">FOLD</button>
+            </div>
+
+            <div id="operators">
+                <button type="button" id="btn_start">START GAME</button>
+            </div>
+        </div>
+
+        <div id="copyright">
+            Sprite & icon design : credit "Kenney.nl"<br>
+            Copyright (c) 2021 Ponderix
+        </div>
+
+        <link rel="stylesheet" href="style.css">
+        <script src="script/main.js" charset="utf-8"></script>
+        <script src="script/functions.js" charset="utf-8"></script>
+    </body>
+</html>
