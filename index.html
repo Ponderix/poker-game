@@ -13,11 +13,17 @@
 
     <body>
         <div id="game">
-            <div id="table">
+            <div id="table" class="table_element">
+                <div id="game_table">
+
+                </div>
+                <div id="player_cards" class="table_element">
+
+                </div>
             </div>
 
             <div id="inputs">
-                <input type="text" id="input_raise" placeholder="RAISE BET"></input>
+                <input type="text" id="input_raise" placeholder="MAKE OR RAISE BET"></input>
                 <button type="button" id="btn_call">CALL BET</button>
                 <button type="button" id="btn_fold">FOLD</button>
             </div>
@@ -34,7 +40,7 @@
 
         <link rel="stylesheet" href="style.css">
         <script src="script/main.js" charset="utf-8"></script>
-        <script src="script/functions.js" charset="utf-8"></script>
-        <script src="script/derived_functions.js" charset="utf-8"></script>
+        <script src="script/basic.js" charset="utf-8"></script>
+        <script src="script/gamefunctions.js" charset="utf-8"></script>
     </body>
 </html>

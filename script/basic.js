@@ -1,4 +1,4 @@
-var functions = {
+var basic = {
     //random number
     number : function(min, max) {
         min = Math.ceil(min);
