@@ -269,4 +269,51 @@ var gamefunctions = {
         });
         return hand;
     },
+
+    calculateBet: function(minbet, hand, uncovered, money) {
+        console.log(hand);
+        if (uncovered < 4) {
+            if (hand.value == 0 && hand.cards[0][1] > 4) {
+                if (minbet > 0.025 * money) {
+                    if (minbet < 150) {
+                        return minbet;
+                    } else {
+                        console.log("minbet more than 150");
+                        return "fold"
+                    }
+                } else {
+                    return minbet + 0.01 * money;
+                }
+            } else {
+                if (hand.value > 0 && hand.cards[0][1] > 5) {
+                    return minbet + 0.025 * money;
+                } else {
+                    console.log("hand is too low");
+                    return "fold";
+                }
+            }
+        } else {
+            if (hand.value > 0 && hand.cards[0][1] > 8) {
+                if (minbet > 0.08 * money) {
+                    if (minbet < 250) {
+                        return minbet;
+                    } else {
+                        console.log("minbet too high");
+                        return "fold"
+                    }
+                } else {
+                    return minbet + 0.025 * money;
+                }
+            } else {
+                if (hand.value > 2 && hand.cards[0][1] > 6) {
+                    return minbet + 0.08 * money;
+                } else {
+                    console.log("hand too low to bet more");
+                    return "fold"
+                }
+            }
+        }
+
+        return minbet + 1;
+    }
 }

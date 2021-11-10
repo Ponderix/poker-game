@@ -78,16 +78,27 @@ document.querySelector("#btn_start").addEventListener("click", function() {
     game.rounds_played++;
 
     //default html
-    player_money_area.html(`YOUR MONEY: <span>${player.money}</span>`);
-    computer_money_area.html(`OPPONENT MONEY: <span>${computer.money}</span>`);
-    game_stake_area.html(`ROUND STAKE: <span>${game.round.stakes}</span>`);
-    game_bet_area.html(`BETS: <span>0</span> | CURRENT MINBET: <span>0</span>`);
+    player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
+    computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
+    game_stake_area.html(`ROUND STAKE: <span>$${game.round.stakes}</span>`);
+    game_bet_area.html(`BETS: <span>$0</span> | CURRENT MINBET: <span>$0</span>`);
 
     //assign 2 cards to player
     player.cards = gamefunctions.getCards(deck, 2);
     computer.cards = gamefunctions.getCards(deck, 2);
-    player_cards_area.html(`YOUR CARDS: <span>${player.cards[0]}</span> and <span>${player.cards[1]}</span>`);
-    computer_cards_area.html(`OPPONENT CARDS: <span>hidden</span> and <span>hidden</span>`);
+
+    (function() {
+        let player_a = player_cards_area.html(`YOUR CARDS:`)
+        let computer_a = computer_cards_area.html(`OPPONENT CARDS:`);
+
+        for (var i = 0; i < 2; i++) {
+            player_a.append("img")
+                .attr("src", `./assets/cards/${player.cards[i]}.png`);
+
+            computer_a.append("img")
+                .attr("src", `./assets/cards/back_red5.png`)
+        }
+    })();
 
 
     //get five cards onto playing table
@@ -121,8 +132,8 @@ document.querySelector("#btn_start").addEventListener("click", function() {
                     }
 
                     //update html
-                    game_bet_area.html(`BETS: <span>${round_totbet}</span> | CURRENT MINIMUM BET: <span>${round_minbet}</span>`);
-                    player_money_area.html(`YOUR MONEY: <span>${player.money}</span>`);
+                    game_bet_area.html(`BETS: <span>$${round_totbet}</span> | CURRENT MINIMUM BET: <span>$${round_minbet}</span>`);
+                    player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
 
                     player_inputs.style("display", "none"); // hide inputs after turn is done
 
@@ -156,8 +167,8 @@ document.querySelector("#btn_start").addEventListener("click", function() {
             player.money+=(-playerbet); // money substracted from player money
 
             //update html
-            game_bet_area.html(`BETS: <span>${round_totbet}</span> | CURRENT MINIMUM BET: <span>${round_minbet}</span>`);
-            player_money_area.html(`YOUR MONEY: <span>${player.money}</span>`);
+            game_bet_area.html(`BETS: <span>$${round_totbet}</span> | CURRENT MINIMUM BET: <span>$${round_minbet}</span>`);
+            player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
 
             player_inputs.style("display", "none"); // hide inputs after turn is done
 
@@ -182,13 +193,12 @@ document.querySelector("#btn_start").addEventListener("click", function() {
         game_bet_area.html("");
         game_stake_area.html("")
         game_table_div.style("background-color", "lightblue");
-        game_turn_area.html(`<br></br>OPPONENT WINS $${game.round.stakes}`);
-        computer_money_area.html(`OPPONENT MONEY: <span>${computer.money}</span>`);
+        game_turn_area.html(`<br></br>OPPONENT WINS $${game.round.stakes}<br> You have folded`);
+        computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
 
         player_inputs.style("display", "none");
         game_round_btn.style("display", "block");
 
-        alert("Player FOLDS");
     });
 
     //FOLD
@@ -202,15 +212,18 @@ document.querySelector("#btn_start").addEventListener("click", function() {
     function UNCOVER_SEQUENCE() {
 
         if (game.round.uncovered < 5) {
-            game_cards_area.selectAll("span").remove();
+            game_cards_area.selectAll("img").remove();
 
             var uncovered = game.round.uncovered;
             uncovered++; // one more card is uncovered
             game.round.uncovered = uncovered;
 
+            game_cards_area.append("img") // append covered card for style effect
+                .attr("src", `./assets/cards/back_blue4.png`);
+
             for (var i = 0; i < uncovered; i++) { // uncover cards according to how many are already uncovered
-                game_cards_area.append("span")
-                    .html(` ${table_cards[i]},`);
+                game_cards_area.append("img")
+                    .attr("src", `./assets/cards/${table_cards[i]}.png`);
             }
 
             if (game.round.uncovered == 5) { //if last card is being uncovered
@@ -223,56 +236,69 @@ document.querySelector("#btn_start").addEventListener("click", function() {
                     game_table_div.style("background-color", "lightblue");
                     game_turn_area.html(`<br></br>ALL CARDS ARE UNCOVERED`);
                     player_inputs.style("display", "none");
-                    game_stake_area.html(`ROUND STAKE: <span>${game.round.stakes}</span>`);
+                    game_stake_area.html(`ROUND STAKE: <span>$${game.round.stakes}</span>`);
                     game_bet_area.html("");
 
                     setTimeout(() =>{ // then show opponents cards
                         game_turn_area.html(`<br></br>OPPONENTS CARDS HAVE BEEN REVEALED<br>calculating winner...`);
 
                         //reveal computer's cards
-                        computer_cards_area.html(`OPPONENT CARDS: <span>${computer.cards[0]}</span> and <span>${computer.cards[1]}</span>`);
+                        (function() {
+                            let computer_a = computer_cards_area.html(`OPPONENT CARDS:`);
+
+                            for (var i = 0; i < 2; i++) {
+                                computer_a.append("img")
+                                    .attr("src", `./assets/cards/${computer.cards[i]}.png`)
+                            }
+                        })();
                         computer_hand_area.html(`<br></br>OPPONENT'S HAND: <span>${computer_hand.type}</span>`);
 
 
                         setTimeout(() =>{// finally compare player and computer hand
                             decide_winner();
                         }, 4000);
-                    }, 3000)
+                    }, 5000)
 
                 }, 0);
 
                 function decide_winner() {
                     if (player_hand.value > computer_hand.value) {
                         player_win();
-                        alert("You have WON!")
                     }
                     if (computer_hand.value > player_hand.value) {
                         computer_win();
-                        alert("You have LOST!")
                     }
 
-                    if (player_hand.value === computer_hand.value) {
+                    if (player_hand.value === computer_hand.value) { // in case same hand
 
                         if (player_hand.cards[0][1] > computer_hand.cards[0][1]) {
                             player_win();
-                            alert(`You have WON!\n(the ${player_hand.type} with the highest rank decides the winner)`);
+                            game_turn_area.html(
+                                `<br></br>YOU WIN $${game.round.stakes}
+                                <br>You both have a <span>${player_hand.type}</span> thus the higher hand decides the game`
+                            );
                         } else {
 
                             if (computer_hand.cards[0][1] > player_hand.cards[0][1]) {
                                 computer_win();
-                                alert(`You have LOST!\n(the ${player_hand.type} with the highest rank decided winner)`);
+                                game_turn_area.html(
+                                    `<br></br>OPPONENT WINS $${game.round.stakes}
+                                    <br>You both have a <span>${computer_hand.type}</span> thus the higher hand decides the game`
+                                );
                             } else {
                                 computer.money+=(0.5*game.round.stakes); //computer gets all the money
                                 player.money+=(0.5*game.round.stakes); //computer gets all the money
 
-                                game_turn_area.html(`<br></br>YOU HAVE BOTH WON $${0.5*game.round.stakes}`);
-                                computer_money_area.html(`OPPONENT MONEY: <span>${computer.money}</span>`);
-                                computer_money_area.html(`OPPONENT MONEY: <span>${player.money}</span>`);
+                                game_turn_area.html(
+                                    `<br></br>YOU HAVE TIED AND RECIEVE $${0.5*game.round.stakes}
+                                    <br>You both have a <span>${computer_hand.type}</span> with the same rank`
+                                );
+                                computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
+                                computer_money_area.html(`OPPONENT MONEY: <span>$${player.money}</span>`);
                                 game_stake_area.html("")
 
 
                                 game_round_btn.style("display", "block");
-                                alert(`You have TIED, because both players have the same hand with the same rank!`)
                             }
 
                         }
@@ -283,8 +309,11 @@ document.querySelector("#btn_start").addEventListener("click", function() {
                 function computer_win() {
                     computer.money+=game.round.stakes; //computer gets all the money
 
-                    game_turn_area.html(`<br></br>OPPONENT WINS $${game.round.stakes}`);
-                    computer_money_area.html(`OPPONENT MONEY: <span>${computer.money}</span>`);
+                    game_turn_area.html(
+                        `<br></br>OPPONENT WINS $${game.round.stakes}
+                        <br>Your opponent's <span>${player_hand.type}</span> beats your <span>${computer_hand.type}</span>`
+                    );
+                    computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
                     game_stake_area.html("")
 
 
@@ -293,8 +322,11 @@ document.querySelector("#btn_start").addEventListener("click", function() {
                 function player_win() {
                     player.money+=game.round.stakes; //computer gets all the money
 
-                    game_turn_area.html(`<br></br>YOU WIN $${game.round.stakes}`);
-                    player_money_area.html(`YOUR MONEY: <span>${player.money}</span>`);
+                    game_turn_area.html(
+                        `<br></br>YOU WIN $${game.round.stakes}
+                        <br>Your <span>${player_hand.type}</span> beats your opponent's <span>${computer_hand.type}</span>`
+                    );
+                    player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
                     game_stake_area.html("")
 
 
@@ -316,17 +348,6 @@ document.querySelector("#btn_start").addEventListener("click", function() {
 
         player_hand_area.html(`<br></br>YOUR HAND: <span>${player_hand.type}</span>`);
         computer_hand_area.html(`<br></br>OPPONENT'S HAND: <span>hidden</span>`);
-
-        function getParams(user) {
-            var param1 = user.cards;
-            var param2 = [];
-
-            for (var i = 0; i < game.round.uncovered; i++) { // select only cards which are uncovered
-                param2.push(table_cards[i]);
-            }
-
-            return [param1, param2];
-        }
     };
 
 
@@ -334,61 +355,107 @@ document.querySelector("#btn_start").addEventListener("click", function() {
     function computer_function() {
 
         var computerbet = 0;
+        var computer_hand = gamefunctions.detectCombination(getParams(computer)[0], getParams(computer)[1]);
 
         if (computer.money > round_minbet) {// if computer has enough money for minimum bet
-            computerbet = round_minbet + 1; // computer bet becomes minimum bet plus 1
-            round_totbet+=computerbet; // bet added to total round bet
-            computer.money+=(-computerbet); // money substracted from player money
 
-            //check if round_minbet should be updated
-            if (computerbet > round_minbet) {
-                round_minbet = computerbet;
-            }
+            init_bet = gamefunctions.calculateBet(round_minbet, computer_hand, game.round.uncovered, computer.money);
 
-            //update html
-            game_bet_area.html(`BETS: <span>${round_totbet}</span> | CURRENT MINIMUM BET: <span>${round_minbet}</span>`);
-            computer_money_area.html(`OPPONENT MONEY: <span>${computer.money}</span>`);
+            if (init_bet == "fold") {
+                computer_fold();
+            } else {
+                computerbet = Math.floor(init_bet);
 
-            //add to rounds betted, has to be 2
-            rounds_of_betting++;
+                round_totbet+=computerbet; // bet added to total round bet
+                computer.money+=(-computerbet); // money substracted from player money
 
-            if (rounds_of_betting >= 2) {
-                game.round.stakes+=round_totbet;
-
-                game_bet_area.html(`BETS: <span>0</span> | CURRENT MINIMUM BET: <span>0</span>`);
-                game_stake_area.html(`ROUND STAKE: <span>${game.round.stakes}</span>`);
-                game_table_div.style("background-color", "lightblue");
-
-                if (game.round.uncovered == 4) {
-                    game_table_div.style("background-color", "lightblue");
-                    game_turn_area.html(`<br></br>FINAL CARD IS BEING UNCOVERED`);
-                    player_inputs.style("display", "none");
-                    game_stake_area.html(`ROUND STAKE: <span>${game.round.stakes}</span>`);
-                    game_bet_area.html("");
-                } else {
-                    game_turn_area.html("<br></br>CARD IS BEING UNCOVERED");
+                //check if round_minbet should be updated
+                if (computerbet > round_minbet) {
+                    round_minbet = computerbet;
                 }
 
-                //resetting variables
-                rounds_of_betting = 0;
-                round_minbet = 0;
-                round_totbet = 0;
+                //update html
+                game_bet_area.html(`BETS: <span>$${round_totbet}</span> | CURRENT MINIMUM BET: <span>$${round_minbet}</span>`);
+                computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
 
-                setTimeout(() =>{
-                    UNCOVER_SEQUENCE();
-                }, 3000); // uncover next card
-            } else {
+                //add to rounds betted, has to be 2
                 rounds_of_betting++;
 
-                computerbet = 0; // reset current computerbet
+                if (rounds_of_betting >= 2) {
+                    game.round.stakes+=round_totbet;
 
-                player_inputs.style("display", "block"); // second turn of betting
-                game_turn_area.html("<br></br>YOUR TURN")
-                game_table_div.style("background-color", "lightgreen");
+                    game_bet_area.html(`BETS: <span>0</span> | CURRENT MINIMUM BET: <span>0</span>`);
+                    game_stake_area.html(`ROUND STAKE: <span>$${game.round.stakes}</span>`);
+                    game_table_div.style("background-color", "lightblue");
+
+                    if (game.round.uncovered == 4) {
+                        game_table_div.style("background-color", "lightblue");
+                        game_turn_area.html(`<br></br>FINAL CARD IS BEING UNCOVERED`);
+                        player_inputs.style("display", "none");
+                        game_stake_area.html(`ROUND STAKE: <span>$${game.round.stakes}</span>`);
+                        game_bet_area.html("");
+                    } else {
+                        game_turn_area.html("<br></br>CARD IS BEING UNCOVERED");
+                    }
+
+                    //resetting variables
+                    rounds_of_betting = 0;
+                    round_minbet = 0;
+                    round_totbet = 0;
+
+                    setTimeout(() =>{
+                        UNCOVER_SEQUENCE();
+                    }, 3000); // uncover next card
+                } else {
+                    rounds_of_betting++;
+
+                    computerbet = 0; // reset current computerbet
+
+                    player_inputs.style("display", "block"); // second turn of betting
+                    game_turn_area.html("<br></br>YOUR TURN")
+                    game_table_div.style("background-color", "lightgreen");
+                }
             }
+
         } else {
-            alert("computer folds")
+            computer_fold();
         }
+
+        function computer_fold() {
+            game.round.stakes+=round_totbet; //in case fold happens during betting
+            player.money+=game.round.stakes; //computer gets all the money
+
+            game_bet_area.html("");
+            game_stake_area.html("")
+            game_table_div.style("background-color", "lightblue");
+            game_turn_area.html(`<br></br>YOU WIN $${game.round.stakes}<br> Opponent has folded`);
+            player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
+
+            player_inputs.style("display", "none");
+            game_round_btn.style("display", "block");
+
+            //reveal computer's cards
+            (function() {
+                let computer_a = computer_cards_area.html(`OPPONENT CARDS:`);
+
+                for (var i = 0; i < 2; i++) {
+                    computer_a.append("img")
+                        .attr("src", `./assets/cards/${computer.cards[i]}.png`)
+                }
+            })();
+            computer_hand_area.html(`<br></br>OPPONENT'S HAND: <span>${computer_hand.type}</span>`);
+        }
+    }
+
+    function getParams(user) {
+        var param1 = user.cards;
+        var param2 = [];
+
+        for (var i = 0; i < game.round.uncovered; i++) { // select only cards which are uncovered
+            param2.push(table_cards[i]);
+        }
+
+        return [param1, param2];
     }
 
 });

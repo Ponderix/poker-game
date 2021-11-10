@@ -11,7 +11,7 @@ body {
     }
         #game_table {
             width: 100%;
-            height: 70%;
+            height: 100%;
             background-color: lightblue;
         }
             #game_table span {
@@ -20,8 +20,13 @@ body {
                 letter-spacing: 1.5px;
             }
             #game_cards_area {
-                padding-top: 25px;
+                display: flex;
+                justify-content: center;
             }
+                #game_cards_area img {
+                    height: 100px;
+                    margin: 20px 5px;
+                }
             #game_turn_area {
                 font-size: 120%;
                 text-decoration: underline;
@@ -37,21 +42,53 @@ body {
                 color: black;
                 letter-spacing: 1.5px;
             }
+        #player_cards {
 
+        }
+            #player_cards_area {
+                width: 50%;
+                float: left;
+                display: flex;
+                justify-content: space-evenly;
+            }
+                #player_cards_area img {
+                    height: 80px;
+                }
+
+        #computer_cards {
+
+        }
+            #computer_cards_area {
+                width: 50%;
+                float: right;
+                display: flex;
+                justify-content: space-evenly;
+            }
+                #computer_cards_area img {
+                    height: 80px;
+                }
 
 
 #inputs {
     position: relative;
+    top: 90px;
 }
 #operators {
-    position: re
+    position: relative;
+    top: 90px;
 }
 
 #copyright {
     position: absolute;
     bottom: 0px;
-    font-size: 9px;
-    color: grey;
+    font-size: 11px;
     font-family: sans-serif;
     margin-bottom: 8px;
 }
+    #copyright a {
+        text-decoration: none;
+        color: #333;
+    }
+    #copyright a:hover {
+        text-decoration: underline;
+    }
