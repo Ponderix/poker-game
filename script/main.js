@@ -46,6 +46,8 @@ const turn_fold = d3.select("#btn_fold");
 
 
 document.querySelector("#btn_start").addEventListener("click", function() {
+    const cards_in_game = 5;
+
     // GAME STATE //
     var game = {
         rounds_played : 0,
@@ -190,10 +192,21 @@ document.querySelector("#btn_start").addEventListener("click", function() {
         game.round.stakes+=round_totbet; //in case fold happens during betting
         computer.money+=game.round.stakes; //computer gets all the money
 
+        game_turn_area.html("");
+        game_turn_area.append("div")
+            .attr("class", "game-loss")
+            .html(
+                `<br></br>OPPONENT WINS $${game.round.stakes}`
+            )
+            .append("div")
+                .attr("class", "result-info")
+                .html(
+                    `<br>You have folded`
+                );
+
         game_bet_area.html("");
         game_stake_area.html("")
         game_table_div.style("background-color", "lightblue");
-        game_turn_area.html(`<br></br>OPPONENT WINS $${game.round.stakes}<br> You have folded`);
         computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
 
         player_inputs.style("display", "none");
@@ -211,22 +224,24 @@ document.querySelector("#btn_start").addEventListener("click", function() {
 
     function UNCOVER_SEQUENCE() {
 
-        if (game.round.uncovered < 5) {
+        if (game.round.uncovered < cards_in_game) {
             game_cards_area.selectAll("img").remove();
 
             var uncovered = game.round.uncovered;
             uncovered++; // one more card is uncovered
             game.round.uncovered = uncovered;
 
-            game_cards_area.append("img") // append covered card for style effect
-                .attr("src", `./assets/cards/back_blue4.png`);
+            if (game.round.uncovered < cards_in_game) {
+                game_cards_area.append("img") // append covered card for style effect
+                    .attr("src", `./assets/cards/back_blue4.png`);
+            }
 
             for (var i = 0; i < uncovered; i++) { // uncover cards according to how many are already uncovered
                 game_cards_area.append("img")
                     .attr("src", `./assets/cards/${table_cards[i]}.png`);
             }
 
-            if (game.round.uncovered == 5) { //if last card is being uncovered
+            if (game.round.uncovered == cards_in_game) { //if last card is being uncovered
                 var player_hand = gamefunctions.detectCombination(getParams(player)[0], getParams(player)[1]);
                 var computer_hand = gamefunctions.detectCombination(getParams(computer)[0], getParams(computer)[1]);
 
@@ -273,28 +288,50 @@ document.querySelector("#btn_start").addEventListener("click", function() {
 
                         if (player_hand.cards[0][1] > computer_hand.cards[0][1]) {
                             player_win();
-                            game_turn_area.html(
-                                `<br></br>YOU WIN $${game.round.stakes}
-                                <br>You both have a <span>${player_hand.type}</span> thus the higher hand decides the game`
-                            );
+                            game_turn_area.html("");
+                            game_turn_area.append("div")
+                                .attr("class", "game-win")
+                                .html(
+                                    `<br></br>YOU WIN $${game.round.stakes}`
+                                )
+                                .append("div")
+                                    .attr("class", "result-info")
+                                    .html(
+                                        `<br>You both have a <span>${player_hand.type}</span> thus the higher hand decides the game`
+                                    );
                         } else {
 
                             if (computer_hand.cards[0][1] > player_hand.cards[0][1]) {
                                 computer_win();
-                                game_turn_area.html(
-                                    `<br></br>OPPONENT WINS $${game.round.stakes}
-                                    <br>You both have a <span>${computer_hand.type}</span> thus the higher hand decides the game`
-                                );
+                                game_turn_area.html("");
+                                game_turn_area.append("div")
+                                    .attr("class", "game-loss")
+                                    .html(
+                                        `<br></br>OPPONENT WINS $${game.round.stakes}`
+                                    )
+                                    .append("div")
+                                        .attr("class", "result-info")
+                                        .html(
+                                            `<br>You both have a <span>${computer_hand.type}</span> so the higher <span>${computer_hand.type}</span> decides the game`
+                                        );
                             } else {
                                 computer.money+=(0.5*game.round.stakes); //computer gets all the money
                                 player.money+=(0.5*game.round.stakes); //computer gets all the money
 
-                                game_turn_area.html(
-                                    `<br></br>YOU HAVE TIED AND RECIEVE $${0.5*game.round.stakes}
-                                    <br>You both have a <span>${computer_hand.type}</span> with the same rank`
-                                );
+                                game_turn_area.html("");
+                                game_turn_area.append("div")
+                                    .attr("class", "game-tie")
+                                    .html(
+                                        `<br></br>YOU HAVE TIED AND RECIEVE $${0.5*game.round.stakes}`
+                                    )
+                                    .append("div")
+                                        .attr("class", "result-info")
+                                        .html(
+                                            `<br>You both have a <span>${computer_hand.type}</span> with the same rank`
+                                        );
+
                                 computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
-                                computer_money_area.html(`OPPONENT MONEY: <span>$${player.money}</span>`);
+                                player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
                                 game_stake_area.html("")
 
 
@@ -309,10 +346,17 @@ document.querySelector("#btn_start").addEventListener("click", function() {
                 function computer_win() {
                     computer.money+=game.round.stakes; //computer gets all the money
 
-                    game_turn_area.html(
-                        `<br></br>OPPONENT WINS $${game.round.stakes}
-                        <br>Your opponent's <span>${player_hand.type}</span> beats your <span>${computer_hand.type}</span>`
-                    );
+                    game_turn_area.html("");
+                    game_turn_area.append("div")
+                        .attr("class", "game-loss")
+                        .html(
+                            `<br></br>OPPONENT WINS $${game.round.stakes}`
+                        )
+                        .append("div")
+                            .attr("class", "result-info")
+                            .html(
+                                `<br>Your opponent's <span>${computer_hand.type}</span> beats your <span>${player_hand.type}</span>`
+                            );
                     computer_money_area.html(`OPPONENT MONEY: <span>$${computer.money}</span>`);
                     game_stake_area.html("")
 
@@ -322,10 +366,18 @@ document.querySelector("#btn_start").addEventListener("click", function() {
                 function player_win() {
                     player.money+=game.round.stakes; //computer gets all the money
 
-                    game_turn_area.html(
-                        `<br></br>YOU WIN $${game.round.stakes}
-                        <br>Your <span>${player_hand.type}</span> beats your opponent's <span>${computer_hand.type}</span>`
-                    );
+                    game_turn_area.html("");
+                    game_turn_area.append("div")
+                        .attr("class", "game-win")
+                        .html(
+                            `<br></br>YOU WIN $${game.round.stakes}`
+                        )
+                        .append("div")
+                            .attr("class", "result-info")
+                            .html(
+                                `<br>Your <span>${player_hand.type}</span> beats your opponent's <span>${computer_hand.type}</span>`
+                            );
+
                     player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
                     game_stake_area.html("")
 
@@ -388,7 +440,7 @@ document.querySelector("#btn_start").addEventListener("click", function() {
                     game_stake_area.html(`ROUND STAKE: <span>$${game.round.stakes}</span>`);
                     game_table_div.style("background-color", "lightblue");
 
-                    if (game.round.uncovered == 4) {
+                    if (game.round.uncovered == cards_in_game - 1) {
                         game_table_div.style("background-color", "lightblue");
                         game_turn_area.html(`<br></br>FINAL CARD IS BEING UNCOVERED`);
                         player_inputs.style("display", "none");
@@ -425,10 +477,21 @@ document.querySelector("#btn_start").addEventListener("click", function() {
             game.round.stakes+=round_totbet; //in case fold happens during betting
             player.money+=game.round.stakes; //computer gets all the money
 
+            game_turn_area.html("");
+            game_turn_area.append("div")
+                .attr("class", "game-win")
+                .html(
+                    `<br></br>YOU WIN $${game.round.stakes}`
+                )
+                .append("div")
+                    .attr("class", "result-info")
+                    .html(
+                        `Opponent has folded!`
+                    );
+
             game_bet_area.html("");
             game_stake_area.html("")
             game_table_div.style("background-color", "lightblue");
-            game_turn_area.html(`<br></br>YOU WIN $${game.round.stakes}<br> Opponent has folded`);
             player_money_area.html(`YOUR MONEY: <span>$${player.money}</span>`);
 
             player_inputs.style("display", "none");

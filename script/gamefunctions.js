@@ -271,7 +271,6 @@ var gamefunctions = {
     },
 
     calculateBet: function(minbet, hand, uncovered, money) {
-        console.log(hand);
         if (uncovered < 4) {
             if (hand.value == 0 && hand.cards[0][1] > 4) {
                 if (minbet > 0.025 * money) {
@@ -293,7 +292,7 @@ var gamefunctions = {
                 }
             }
         } else {
-            if (hand.value > 0 && hand.cards[0][1] > 8) {
+            if (hand.value > 0 || hand.cards[0][1] > 9) {
                 if (minbet > 0.08 * money) {
                     if (minbet < 250) {
                         return minbet;
