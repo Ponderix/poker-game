@@ -1,6 +1,20 @@
 body {
     font-family: sans-serif;
 }
+#instructions {
+    width: 600px;
+    line-height: 18px;
+    position: absolute;
+    top: 20px;
+    left: 650px;
+    font-size: 12px;
+}
+#instructions h1 {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+
     #table {
         width: 600px;
         height: 300px;
