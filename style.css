@@ -1,6 +1,21 @@
 body {
     font-family: sans-serif;
 }
+
+button {
+    border: none;
+    color: white;
+    background-color: #ff8f00;
+    height: 20px;
+    border-radius: 2px;
+    box-shadow: 0.5px 0.5px 2px gray;
+}
+button:hover {
+    background-color: white;
+    color: #ff8f00;
+    transition: 0.15s;
+}
+
 #instructions {
     width: 600px;
     line-height: 18px;
